@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 // The input fields used to get the old values
 class InputField extends React.Component {
@@ -224,7 +225,7 @@ class Calc extends React.Component {
 }
 
 ReactDOM.render(
-    <Calc/>,
+    <Router basename={process.env.PUBLIC_URL}><Calc/></Router>,
     document.getElementById('root')
 );
 
