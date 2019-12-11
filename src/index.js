@@ -110,7 +110,7 @@ class Calc extends React.Component {
         this.doTheMath = this.doTheMath.bind(this);
     }
 
-    handleValUpdate(val, key) {
+    handleValUpdate = async (val, key) => {
         const oldState = this.state;
         const PB = key === 'PB' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].PB, crChart[oldState.outCR].PB) : oldState.PB;
         const AC = key === 'AC' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].AC, crChart[oldState.outCR].AC) : oldState.AC;
@@ -118,7 +118,7 @@ class Calc extends React.Component {
         const AB = key === 'AB' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].AB, crChart[oldState.outCR].AB) : oldState.AB;
         const DR = key === 'DR' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].DR, crChart[oldState.outCR].DR) : oldState.DR;
         const DC = key === 'DC' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].DC, crChart[oldState.outCR].DC) : oldState.DC;
-        this.setState({
+        await this.setState({
             'PB': PB,
             'AC': AC,
             'HP': HP,
@@ -130,7 +130,7 @@ class Calc extends React.Component {
         });
     }
 
-    handleCRUpdate(val, side) {
+    handleCRUpdate = async(val, side) => {
         const oldState = this.state;
         const inCR = side === 'in' ? parseInt(val) : oldState.inCR;
         const outCR = side === 'out' ? parseInt(val) : oldState.outCR;
@@ -144,7 +144,7 @@ class Calc extends React.Component {
         // const DR = monsterMath(parseFloat(val), crChart[oldState.inCR].DR, crChart[oldState.outCR].DR);
         // const DC = monsterMath(parseFloat(val), crChart[oldState.inCR].DC, crChart[oldState.outCR].DC);
 
-        this.setState((props, state) => { return {
+        await this.setState((props, state) => { return {
                 'PB': oldState.PB,
                 'AC': oldState.AC,
                 'HP': oldState.HP,
@@ -156,10 +156,10 @@ class Calc extends React.Component {
         }
         });
 
-        // this.doTheMath();
+        this.doTheMath();
     }
 
-    doTheMath() {
+    doTheMath = async () => {
         const oldState = this.state;
         let newState = {
             'PB': monsterMath(parseFloat(oldState.PB), crChart[oldState.inCR].PB, crChart[oldState.outCR].PB),
@@ -171,7 +171,7 @@ class Calc extends React.Component {
             'inCR': oldState.inCR,
             'outCR': oldState.outCR
         };
-        this.setState((props, state) => newState);
+        await this.setState((props, state) => newState);
     }
 
     render() {
