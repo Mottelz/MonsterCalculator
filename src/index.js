@@ -96,14 +96,24 @@ class Calc extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            'PB': 0,
-            'AC': 0,
-            'HP': 0,
-            'AB': 0,
-            'DR': 0,
-            'DC': 0,
-            'inCR': 0,
-            'outCR': 0
+            inStats: {
+                'PB': 0,
+                'AC': 0,
+                'HP': 0,
+                'AB': 0,
+                'DR': 0,
+                'DC': 0,
+                'CR': 0
+            },
+            outStats: {
+                'PB': 0,
+                'AC': 0,
+                'HP': 0,
+                'AB': 0,
+                'DR': 0,
+                'DC': 0,
+                'CR': 0
+            }
         };
         this.handleValUpdate = this.handleValUpdate.bind(this);
         this.handleCRUpdate = this.handleCRUpdate.bind(this);
@@ -112,79 +122,102 @@ class Calc extends React.Component {
 
     handleValUpdate = async (val, key) => {
         const oldState = this.state;
-        const PB = key === 'PB' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].PB, crChart[oldState.outCR].PB) : oldState.PB;
-        const AC = key === 'AC' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].AC, crChart[oldState.outCR].AC) : oldState.AC;
-        const HP = key === 'HP' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].HP, crChart[oldState.outCR].HP) : oldState.HP;
-        const AB = key === 'AB' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].AB, crChart[oldState.outCR].AB) : oldState.AB;
-        const DR = key === 'DR' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].DR, crChart[oldState.outCR].DR) : oldState.DR;
-        const DC = key === 'DC' ?  monsterMath(parseFloat(val), crChart[oldState.inCR].DC, crChart[oldState.outCR].DC) : oldState.DC;
-        await this.setState({
+
+        const PB = key === 'PB' ?  parseFloat(val) : oldState.inStats.PB;
+        const AC = key === 'AC' ?  parseFloat(val) : oldState.inStats.AC;
+        const HP = key === 'HP' ?  parseFloat(val) : oldState.inStats.HP;
+        const AB = key === 'AB' ?  parseFloat(val) : oldState.inStats.AB;
+        const DR = key === 'DR' ?  parseFloat(val) : oldState.inStats.DR;
+        const DC = key === 'DC' ?  parseFloat(val) : oldState.inStats.DC;
+        const inCR = oldState.inStats.CR;
+        const outCR = oldState.outStats.CR;
+        await this.setState({ inStats: {
             'PB': PB,
             'AC': AC,
             'HP': HP,
             'AB': AB,
             'DR': DR,
             'DC': DC,
-            'inCR': oldState.inCR,
-            'outCR': oldState.outCR
-        });
-    }
+            'CR': inCR
+        },
+        outStats: {
+            'PB': PB,
+            'AC': AC,
+            'HP': HP,
+            'AB': AB,
+            'DR': DR,
+            'DC': DC,
+            'CR': outCR
+        }});
+        this.doTheMath()
+    };
 
     handleCRUpdate = async(val, side) => {
         const oldState = this.state;
-        const inCR = side === 'in' ? parseInt(val) : oldState.inCR;
-        const outCR = side === 'out' ? parseInt(val) : oldState.outCR;
-
-        console.log(inCR);
-        console.log(outCR);
-        // const PB = monsterMath(parseFloat(val), crChart[oldState.inCR].PB, crChart[oldState.outCR].PB);
-        // const AC = monsterMath(parseFloat(val), crChart[oldState.inCR].AC, crChart[oldState.outCR].AC);
-        // const HP = monsterMath(parseFloat(val), crChart[oldState.inCR].HP, crChart[oldState.outCR].HP);
-        // const AB = monsterMath(parseFloat(val), crChart[oldState.inCR].AB, crChart[oldState.outCR].AB);
-        // const DR = monsterMath(parseFloat(val), crChart[oldState.inCR].DR, crChart[oldState.outCR].DR);
-        // const DC = monsterMath(parseFloat(val), crChart[oldState.inCR].DC, crChart[oldState.outCR].DC);
+        const inCR = side === 'in' ? parseInt(val) : oldState.inStats.CR;
+        const outCR = side === 'out' ? parseInt(val) : oldState.outStats.CR;
 
         await this.setState((props, state) => { return {
-                'PB': oldState.PB,
-                'AC': oldState.AC,
-                'HP': oldState.HP,
-                'AB': oldState.AB,
-                'DR': oldState.DR,
-                'DC': oldState.DC,
-                'inCR': inCR,
-                'outCR': outCR
-        }
+            inStats : {
+                'PB': oldState.inStats.PB,
+                'AC': oldState.inStats.AC,
+                'HP': oldState.inStats.HP,
+                'AB': oldState.inStats.AB,
+                'DR': oldState.inStats.DR,
+                'DC': oldState.inStats.DC,
+                'CR': inCR
+            },
+            outStats: {
+                'PB': oldState.outStats.PB,
+                'AC': oldState.outStats.AC,
+                'HP': oldState.outStats.HP,
+                'AB': oldState.outStats.AB,
+                'DR': oldState.outStats.DR,
+                'DC': oldState.outStats.DC,
+                'CR': outCR
+            }
+            }
         });
 
         this.doTheMath();
-    }
+    };
 
     doTheMath = async () => {
         const oldState = this.state;
         let newState = {
-            'PB': monsterMath(parseFloat(oldState.PB), crChart[oldState.inCR].PB, crChart[oldState.outCR].PB),
-            'AC': monsterMath(parseFloat(oldState.AC), crChart[oldState.inCR].AC, crChart[oldState.outCR].AC),
-            'HP': monsterMath(parseFloat(oldState.HP), crChart[oldState.inCR].HP, crChart[oldState.outCR].HP),
-            'AB': monsterMath(parseFloat(oldState.AB), crChart[oldState.inCR].AB, crChart[oldState.outCR].AB),
-            'DR': monsterMath(parseFloat(oldState.DR), crChart[oldState.inCR].DR, crChart[oldState.outCR].DR),
-            'DC': monsterMath(parseFloat(oldState.DC), crChart[oldState.inCR].DC, crChart[oldState.outCR].DC),
-            'inCR': oldState.inCR,
-            'outCR': oldState.outCR
+            inStats: {
+                'PB': oldState.inStats.PB,
+                'AC': oldState.inStats.AC,
+                'HP': oldState.inStats.HP,
+                'AB': oldState.inStats.AB,
+                'DR': oldState.inStats.DR,
+                'DC': oldState.inStats.DC,
+                'CR': oldState.inStats.CR
+            },
+            outStats: {
+                'PB': monsterMath(parseFloat(oldState.inStats.PB), crChart[oldState.inStats.CR].PB, crChart[oldState.outStats.CR].PB),
+                'AC': monsterMath(parseFloat(oldState.inStats.AC), crChart[oldState.inStats.CR].AC, crChart[oldState.outStats.CR].AC),
+                'HP': monsterMath(parseFloat(oldState.inStats.HP), crChart[oldState.inStats.CR].HP, crChart[oldState.outStats.CR].HP),
+                'AB': monsterMath(parseFloat(oldState.inStats.AB), crChart[oldState.inStats.CR].AB, crChart[oldState.outStats.CR].AB),
+                'DR': monsterMath(parseFloat(oldState.inStats.DR), crChart[oldState.inStats.CR].DR, crChart[oldState.outStats.CR].DR),
+                'DC': monsterMath(parseFloat(oldState.inStats.DC), crChart[oldState.inStats.CR].DC, crChart[oldState.outStats.CR].DC),
+                'CR': oldState.outStats.CR
+            }
         };
         await this.setState((props, state) => newState);
-    }
+    };
 
     render() {
         return(
             <>
                 <label>CR </label>
                 <CRField side='in' handleChange={this.handleCRUpdate}/> <CRField side='out' handleChange={this.handleCRUpdate}/> <br/>
-                <InputField name='PB' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.PB}/> <br/>
-                <InputField name='AC' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.AC}/> <br/>
-                <InputField name='HP' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.HP}/> <br/>
-                <InputField name='AB' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.AB}/> <br/>
-                <InputField name='DR' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.DR}/> <br/>
-                <InputField name='DC' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.DC}/> <br/>
+                <InputField name='PB' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.outStats.PB}/> <br/>
+                <InputField name='AC' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.outStats.AC}/> <br/>
+                <InputField name='HP' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.outStats.HP}/> <br/>
+                <InputField name='AB' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.outStats.AB}/> <br/>
+                <InputField name='DR' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.outStats.DR}/> <br/>
+                <InputField name='DC' handleUpdate={this.handleValUpdate}/> <OutputField value={this.state.outStats.DC}/> <br/>
             </>
         )
     }
@@ -234,8 +267,6 @@ const crChart = [
 ];
 
 // Do the monster math
-//( currentValue / maxThatValueCouldBeAtOurCurrentCR) * maxThatValueCouldBeAtTheCRWeAreScalingTo.
 function monsterMath(currentValue, maxThatValueCouldBeAtOurCurrentCR, maxThatValueCouldBeAtTheCRWeAreScalingTo) {
-    // const out = ((currentValue / maxThatValueCouldBeAtOurCurrentCR) * maxThatValueCouldBeAtTheCRWeAreScalingTo);
-    return currentValue / maxThatValueCouldBeAtOurCurrentCR * maxThatValueCouldBeAtTheCRWeAreScalingTo;
+    return Math.floor(currentValue / maxThatValueCouldBeAtOurCurrentCR * maxThatValueCouldBeAtTheCRWeAreScalingTo);
 }
